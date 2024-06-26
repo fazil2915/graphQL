@@ -1,6 +1,6 @@
 import "graphql-import-node";
 import fastify from "fastify";
-import { getGraphQLParameters, processRequest, Request, sendResult } from "graphql-helix";
+import { getGraphQLParameters, processRequest, Request, sendResult,renderGraphiQL,shouldRenderGraphiQL } from "graphql-helix";
 import { schema } from "./schema";
 
 async function main() {
@@ -11,7 +11,7 @@ async function main() {
   // });
 
 server.route({
-  method:"POST",
+  method:["POST","GET"],
   url:"/graphql",
   handler:async(req,reply)=>{
     const request :Request={
@@ -20,6 +20,17 @@ server.route({
       query:req.query,
       body:req.body,
     };
+  //render the out for graphIde
+
+  if(shouldRenderGraphiQL(request)){
+    reply.header("content-type","text/html");
+    reply.send(
+      renderGraphiQL({
+        endpoint:"/graphql",
+      })
+    )
+  }
+
     const {operationName,query,variables}=request.body=getGraphQLParameters(request);
 
     const result=await processRequest({
