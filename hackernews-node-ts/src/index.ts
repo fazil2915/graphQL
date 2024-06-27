@@ -28,7 +28,8 @@ server.route({
       renderGraphiQL({
         endpoint:"/graphql",
       })
-    )
+    );
+    return;
   }
 
     const {operationName,query,variables}=request.body=getGraphQLParameters(request);
@@ -46,7 +47,7 @@ server.route({
 });
 
 
-  server.listen(3000, "0.0.0.0", () => {
+  server.listen({port:3000,host: "0.0.0.0"}, () => {
     console.log(`Server is running on http://localhost:3000/`);
   });
 }
